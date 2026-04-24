@@ -1,0 +1,61 @@
+<div class="notifications">
+  <div class="header">
+    <div>
+      <h1>🔔 Notifications & Alerts</h1>
+      <p>Stay on top of your budgets, spending, and investments</p>
+    </div>
+    <button class="btn-mark-all" (click)="markAllRead()" *ngIf="unreadCount > 0">
+      ✓ Mark all as read
+    </button>
+  </div>
+
+  <!-- Summary badges -->
+  <div class="summary-row">
+    <div class="summary-badge total" (click)="filter = 'all'" [class.active]="filter === 'all'">
+      🔔 All <span>{{ notifications.length }}</span>
+    </div>
+    <div class="summary-badge unread" (click)="filter = 'unread'" [class.active]="filter === 'unread'">
+      🔵 Unread <span>{{ unreadCount }}</span>
+    </div>
+    <div class="summary-badge danger" (click)="filter = 'danger'" [class.active]="filter === 'danger'">
+      🚨 Critical <span>{{ countByType('danger') }}</span>
+    </div>
+    <div class="summary-badge warning" (click)="filter = 'warning'" [class.active]="filter === 'warning'">
+      ⚠️ Warnings <span>{{ countByType('warning') }}</span>
+    </div>
+    <div class="summary-badge success" (click)="filter = 'success'" [class.active]="filter === 'success'">
+      ✅ Good News <span>{{ countByType('success') }}</span>
+    </div>
+    <div class="summary-badge info" (click)="filter = 'info'" [class.active]="filter === 'info'">
+      ℹ️ Tips <span>{{ countByType('info') }}</span>
+    </div>
+  </div>
+
+  <!-- Notification list -->
+  <div class="notification-list">
+    <div
+      *ngFor="let n of filtered"
+      class="notification-card"
+      [class.unread]="!n.read"
+      [class]="'notification-card ' + n.type + (!n.read ? ' unread' : '')"
+    >
+      <div class="notif-icon">{{ getIcon(n.type) }}</div>
+      <div class="notif-body">
+        <div class="notif-header">
+          <span class="notif-title">{{ n.title }}</span>
+          <span class="notif-category">{{ n.category }}</span>
+        </div>
+        <p class="notif-message">{{ n.message }}</p>
+        <span class="notif-time">{{ n.time }}</span>
+      </div>
+      <div class="notif-actions">
+        <button *ngIf="!n.read" class="btn-read" (click)="markRead(n.id)" title="Mark as read">✓</button>
+        <button class="btn-dismiss" (click)="dismiss(n.id)" title="Dismiss">✕</button>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="filtered.length === 0">
+      <p>🎉 No notifications in this category</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,173 @@
+<div class="home-dashboard">
+  <div class="header">
+    <h1>Welcome to The Store House</h1>
+    <p>Your complete financial overview at a glance</p>
+  </div>
+
+  <div class="quick-stats">
+    <!-- Monthly Income - editable -->
+    <div class="stat-card">
+      <button class="edit-btn-top" *ngIf="!editingIncome" (click)="tempIncome = monthlyIncome; editingIncome = true">✏️ Edit</button>
+      <div class="stat-icon">💰</div>
+      <div class="stat-content">
+        <h3>Monthly Income</h3>
+        <div *ngIf="!editingIncome">
+          <p class="stat-value">₹{{ monthlyIncome | number:'1.0-0' }}</p>
+        </div>
+        <div *ngIf="editingIncome" class="edit-row">
+          <input type="number" [(ngModel)]="tempIncome" (keyup.enter)="saveEdit('income')" (keyup.escape)="cancelEdit('income')" class="edit-input" autofocus />
+          <button class="save-btn" (click)="saveEdit('income')">✓</button>
+          <button class="cancel-btn" (click)="cancelEdit('income')">✕</button>
+        </div>
+        <span class="stat-change positive">+5.2%</span>
+      </div>
+    </div>
+
+    <!-- Monthly Spending - editable -->
+    <div class="stat-card">
+      <button class="edit-btn-top" *ngIf="!editingSpending" (click)="tempSpending = monthlySpending; editingSpending = true">✏️ Edit</button>
+      <div class="stat-icon">💸</div>
+      <div class="stat-content">
+        <h3>Monthly Spending</h3>
+        <div *ngIf="!editingSpending">
+          <p class="stat-value">₹{{ monthlySpending | number:'1.0-0' }}</p>
+        </div>
+        <div *ngIf="editingSpending" class="edit-row">
+          <input type="number" [(ngModel)]="tempSpending" (keyup.enter)="saveEdit('spending')" (keyup.escape)="cancelEdit('spending')" class="edit-input" autofocus />
+          <button class="save-btn" (click)="saveEdit('spending')">✓</button>
+          <button class="cancel-btn" (click)="cancelEdit('spending')">✕</button>
+        </div>
+        <span class="stat-change negative">+2.1%</span>
+      </div>
+    </div>
+
+    <!-- Investment Value - computed -->
+    <a routerLink="/investment-tracker" class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-content">
+        <h3>Investment Value</h3>
+        <p class="stat-value">₹{{ investmentValue | number:'1.0-0' }}</p>
+        <span class="stat-change positive">+{{ investmentReturns | number:'1.0-0' }} returns</span>
+      </div>
+    </a>
+
+    <!-- Net Savings - computed -->
+    <a routerLink="/spend-analyzer" class="stat-card">
+      <div class="stat-icon">💵</div>
+      <div class="stat-content">
+        <h3>Net Savings</h3>
+        <p class="stat-value" [class.negative]="netSavings < 0">₹{{ netSavings | number:'1.0-0' }}</p>
+        <span class="stat-change" [class.positive]="netSavings > 0" [class.negative]="netSavings < 0">
+          {{ netSavings > 0 ? '▲ Surplus' : netSavings < 0 ? '▼ Deficit' : '— Break Even' }} · {{ savingsRate | number:'1.1-1' }}%
+        </span>
+      </div>
+    </a>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="market-trends-section">
+      <h2>📈 Market Trends & Portfolio Impact</h2>
+      <div class="trends-list">
+        <div *ngFor="let trend of marketTrends" class="trend-item" [class]="trend.impact">
+          <div class="trend-header">
+            <div class="trend-title">
+              <span class="trend-icon">{{ trend.icon }}</span>
+              <h4>{{ trend.title }}</h4>
+            </div>
+            <span class="trend-badge" [class]="trend.impact">{{ trend.impact }}</span>
+          </div>
+          <p class="trend-desc">{{ trend.description }}</p>
+          <div class="trend-meta">
+            <span class="trend-change" [class.positive]="trend.change > 0" [class.negative]="trend.change < 0">
+              {{ trend.change > 0 ? '+' : '' }}{{ trend.change }}%
+            </span>
+            <span class="trend-time">{{ trend.timeAgo }}</span>
+          </div>
+        </div>
+      </div>
+      <button class="refresh-btn" (click)="refreshTrends()" [disabled]="loadingTrends">
+        {{ loadingTrends ? '⏳ Analyzing...' : '🔄 Refresh Trends' }}
+      </button>
+    </div>
+
+    <div class="insights-section">
+      <h2>🤖 AI Insights</h2>
+      <div class="insight-list">
+        <div *ngFor="let insight of recentInsights" class="insight-item" [class]="insight.type">
+          <div class="insight-icon">
+            <span *ngIf="insight.type === 'warning'">⚠️</span>
+            <span *ngIf="insight.type === 'success'">✅</span>
+            <span *ngIf="insight.type === 'info'">💡</span>
+          </div>
+          <div class="insight-content">
+            <h4>{{ insight.title }}</h4>
+            <p>{{ insight.message }}</p>
+          </div>
+        </div>
+      </div>
+      <a routerLink="/spend-analyzer" class="view-more">View All Insights →</a>
+    </div>
+
+    <div class="spending-section">
+      <h2>📊 Top Spending Categories</h2>
+      <div class="spending-list">
+        <div *ngFor="let item of spendingBreakdown" class="spending-item">
+          <div class="spending-info">
+            <span class="category-name">{{ item.category }}</span>
+            <span class="category-amount">₹{{ item.amount.toFixed(0) }}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="item.percent"></div>
+          </div>
+          <span class="category-percent">{{ item.percent.toFixed(1) }}%</span>
+        </div>
+      </div>
+      <a routerLink="/spend-analyzer" class="view-more">View Detailed Analysis →</a>
+    </div>
+
+    <div class="investments-section">
+      <h2>💎 Top Performing Investments</h2>
+      <div class="investment-list">
+        <div *ngFor="let inv of topInvestments" class="investment-item">
+          <div class="inv-info">
+            <span class="inv-name">{{ inv.name }}</span>
+            <span class="inv-value">₹{{ inv.value.toFixed(0) }}</span>
+          </div>
+          <span class="inv-returns positive">+{{ inv.returns }}%</span>
+        </div>
+      </div>
+      <a routerLink="/investment-tracker" class="view-more">View All Investments →</a>
+    </div>
+
+    <div class="quick-actions">
+      <h2>⚡ Quick Actions</h2>
+      <div class="action-buttons">
+        <a routerLink="/spend-analyzer" class="action-btn">
+          <span class="action-icon">📁</span>
+          <span class="action-label">Upload Bank Statement</span>
+        </a>
+        <a routerLink="/investment-tracker" class="action-btn">
+          <span class="action-icon">➕</span>
+          <span class="action-label">Add Investment</span>
+        </a>
+        <a routerLink="/investment-planning" class="action-btn">
+          <span class="action-icon">🎯</span>
+          <span class="action-label">Plan Investment</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-banner">
+    <div class="banner-content">
+      <h3>💰 Financial Health Score</h3>
+      <div class="score-display">
+        <div class="score-circle">85</div>
+        <div class="score-info">
+          <p class="score-label">Excellent</p>
+          <p class="score-desc">Your finances are in great shape! Keep up the good work.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

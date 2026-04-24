@@ -1,0 +1,31 @@
+:root {
+    --fontFamily: 'Outfit', sans-serif;
+    --daxaColor: #0f79f3;
+    --primaryColor: #796df6;
+    --dangerColor: #e74c3c;
+    --infoColor: #00cae3;
+    --warningColor: #ffb264;
+    --successColor: #2ed47e;
+    --blackColor: #475569;
+    --whiteColor: #ffffff;
+    --bodyColor: #919aa3;
+    --transition: .5s;
+    --fontSize: 16px;
+    --borderBoxShadow: rgba(0, 0, 0, .05) 0px 6px 24px 0px, rgba(0, 0, 0, .08) 0px 0px 0px 1px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--blackColor);
+  background-color: #eff3f9;
+  font-family: var(--fontFamily);
+  font-weight: 400;
+  font-size: var(--fontSize);
+}

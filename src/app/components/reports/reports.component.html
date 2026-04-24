@@ -1,0 +1,202 @@
+<div class="reports">
+
+  <div class="header">
+    <h1>📄 Expense Report & Advisor</h1>
+    <p>Review your bank statement and get personalized money-saving advice</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button [class.active]="activeTab === 'report'" (click)="activeTab = 'report'">📋 Expense Report</button>
+    <button [class.active]="activeTab === 'advisor'" (click)="activeTab = 'advisor'">
+      🤖 Smart Advisor
+      <span class="badge" *ngIf="advisorTips.length > 0">{{ advisorTips.length }}</span>
+    </button>
+  </div>
+
+  <!-- No data state -->
+  <div class="empty-state" *ngIf="!hasData">
+    <div class="empty-icon">📂</div>
+    <h3>No Bank Statement Data Found</h3>
+    <p>Upload your bank statement in <strong>Spend Analyzer</strong> first to generate your report.</p>
+  </div>
+
+  <!-- Report Tab -->
+  <div *ngIf="hasData && activeTab === 'report'">
+
+    <!-- Overview cards -->
+    <div class="overview-cards">
+      <div class="card green">
+        <div class="card-icon">💰</div>
+        <div>
+          <div class="label">Total Income</div>
+          <div class="value">₹{{ totalIncome | number:'1.0-0' }}</div>
+        </div>
+      </div>
+      <div class="card red">
+        <div class="card-icon">💸</div>
+        <div>
+          <div class="label">Total Expenses</div>
+          <div class="value">₹{{ totalSpending | number:'1.0-0' }}</div>
+        </div>
+      </div>
+      <div class="card" [class.green]="savingsRate >= 20" [class.yellow]="savingsRate > 0 && savingsRate < 20" [class.red]="savingsRate <= 0">
+        <div class="card-icon">🏦</div>
+        <div>
+          <div class="label">Savings Rate</div>
+          <div class="value">{{ savingsRate | number:'1.1-1' }}%</div>
+        </div>
+      </div>
+      <div class="card blue">
+        <div class="card-icon">📊</div>
+        <div>
+          <div class="label">Net Balance</div>
+          <div class="value" [class.negative]="totalIncome - totalSpending < 0">
+            ₹{{ (totalIncome - totalSpending) | number:'1.0-0' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expense breakdown table -->
+    <div class="section-card">
+      <div class="section-title">📋 Expense Breakdown vs Recommended Benchmarks</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Amount Spent</th>
+            <th>% of Spending</th>
+            <th>% of Income</th>
+            <th>Recommended</th>
+            <th>Transactions</th>
+            <th>Avg / Txn</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of categoryReports">
+            <td class="bold">{{ c.category }}</td>
+            <td class="amount">₹{{ c.total | number:'1.0-0' }}</td>
+            <td>{{ c.percentage | number:'1.1-1' }}%</td>
+            <td [class.over]="getActualPct(c.total) > getBenchmark(c.category) && getBenchmark(c.category) > 0">
+              {{ getActualPct(c.total) | number:'1.1-1' }}%
+            </td>
+            <td class="benchmark">
+              <span *ngIf="getBenchmark(c.category) > 0">≤ {{ getBenchmark(c.category) }}%</span>
+              <span *ngIf="getBenchmark(c.category) === 0" class="na">—</span>
+            </td>
+            <td>{{ c.count }}</td>
+            <td>₹{{ c.avgPerTransaction | number:'1.0-0' }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(c.status)">
+                {{ c.status === 'high' ? '🔴 High' : c.status === 'moderate' ? '🟡 Moderate' : '🟢 Low' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="section-card">
+      <div class="section-title">💡 Personalized Suggestions to Maintain Your Expenses</div>
+      <div class="suggestions-list">
+        <div class="suggestion-card" *ngFor="let s of suggestions" [ngClass]="getPriorityClass(s.priority)">
+          <div class="suggestion-icon">{{ s.icon }}</div>
+          <div class="suggestion-body">
+            <div class="suggestion-header">
+              <span class="suggestion-category">{{ s.category }}</span>
+              <span class="priority-badge" [ngClass]="getPriorityClass(s.priority)">
+                {{ s.priority === 'high' ? '🔴 High Priority' : s.priority === 'medium' ? '🟡 Medium' : '🟢 Good' }}
+              </span>
+            </div>
+            <p class="issue">{{ s.issue }}</p>
+            <div class="tip">
+              <span class="tip-label">💬 Suggestion:</span> {{ s.tip }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Advisor Tab -->
+  <div *ngIf="hasData && activeTab === 'advisor'">
+
+    <div class="advisor-intro">
+      <div class="intro-icon">🤖</div>
+      <div class="intro-text">
+        <h3>Your Personal Finance Advisor</h3>
+        <p>Based on your budget limits, here are specific categories where you're overspending and how to fix them.</p>
+      </div>
+    </div>
+
+    <div class="potential-saving" *ngIf="totalPotentialSaving > 0">
+      <div class="saving-icon">💰</div>
+      <div>
+        <div class="saving-label">Potential Monthly Saving</div>
+        <div class="saving-value">₹{{ totalPotentialSaving | number:'1.0-0' }}</div>
+        <div class="saving-desc">If you follow the advice below, you could save this much every month</div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="advisorTips.length === 0">
+      <div class="empty-icon">✅</div>
+      <h3>All Budgets Under Control!</h3>
+      <p>None of your categories have crossed their budget limits. Keep up the great work!</p>
+    </div>
+
+    <div class="advisor-cards" *ngIf="advisorTips.length > 0">
+      <div class="advisor-card" *ngFor="let tip of advisorTips" [ngClass]="getSeverityClass(tip.severity)">
+        <div class="advisor-top">
+          <div class="advisor-icon">{{ tip.icon }}</div>
+          <div class="advisor-header">
+            <div class="advisor-category">{{ tip.category }}</div>
+            <div class="advisor-badges">
+              <span class="severity-badge" [ngClass]="getSeverityClass(tip.severity)">
+                {{ tip.severity === 'critical' ? '🚨 Critical' : '⚠️ Warning' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="advisor-stats">
+          <div class="stat">
+            <span class="stat-label">Budget Limit</span>
+            <span class="stat-val">₹{{ tip.budgetLimit | number:'1.0-0' }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Amount Spent</span>
+            <span class="stat-val over">₹{{ tip.amountSpent | number:'1.0-0' }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Over By</span>
+            <span class="stat-val over">₹{{ tip.overBy | number:'1.0-0' }} (+{{ tip.overByPct | number:'1.0-0' }}%)</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Potential Saving</span>
+            <span class="stat-val saving">₹{{ tip.monthlySaving | number:'1.0-0' }}/mo</span>
+          </div>
+        </div>
+
+        <div class="advisor-section">
+          <div class="section-title">💡 How to Save Money in {{ tip.category }}</div>
+          <ul class="advice-list">
+            <li *ngFor="let advice of tip.advice">{{ advice }}</li>
+          </ul>
+        </div>
+
+        <div class="advisor-section">
+          <div class="section-title">⚡ Quick Wins (Start Today)</div>
+          <div class="quick-wins">
+            <span class="quick-win" *ngFor="let win of tip.quickWins">✓ {{ win }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

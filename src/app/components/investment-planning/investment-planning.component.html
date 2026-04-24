@@ -1,0 +1,198 @@
+<div class="investment-planning">
+  <div class="header">
+    <div>
+      <h1>💰 Investment Planning</h1>
+      <p>Live mutual fund rates, financial news & personalized investment planner</p>
+    </div>
+    <button class="btn-refresh" (click)="loadFunds()" [disabled]="loadingFunds">
+      {{ loadingFunds ? '⏳ Fetching...' : '🔄 Refresh Rates' }}
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button [class.active]="activeTab === 'funds'" (click)="activeTab = 'funds'">📊 Live Fund Rates</button>
+    <button [class.active]="activeTab === 'news'" (click)="activeTab = 'news'">📰 Market News</button>
+    <button [class.active]="activeTab === 'planner'" (click)="activeTab = 'planner'">🎯 Investment Planner</button>
+  </div>
+
+  <!-- Live Fund Rates -->
+  <div *ngIf="activeTab === 'funds'">
+    <div class="last-updated" *ngIf="lastUpdated">Last updated: {{ lastUpdated }} &nbsp;|&nbsp; Source: MFAPI (AMFI)</div>
+
+    <div class="loading-state" *ngIf="loadingFunds">
+      <div class="spinner"></div>
+      <p>Fetching live NAV data from AMFI...</p>
+    </div>
+
+    <div class="funds-table" *ngIf="!loadingFunds && funds.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Fund Name</th>
+            <th>Category</th>
+            <th>NAV (₹)</th>
+            <th>Day Change</th>
+            <th>1Y Return</th>
+            <th>Risk</th>
+            <th>As of Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let fund of funds">
+            <td class="fund-name">{{ fund.schemeName }}</td>
+            <td><span class="category-badge">{{ fund.category }}</span></td>
+            <td class="nav-value">₹{{ fund.nav | number:'1.2-2' }}</td>
+            <td [class]="getNavClass(fund.change)">
+              {{ fund.change >= 0 ? '▲' : '▼' }} ₹{{ fund.change | number:'1.2-2' }}
+              ({{ fund.changePercent | number:'1.2-2' }}%)
+            </td>
+            <td [class]="getNavClass(fund.oneYearReturn)">{{ fund.oneYearReturn }}%</td>
+            <td><span class="risk-badge" [ngClass]="getRiskClass(fund.risk)">{{ fund.risk }}</span></td>
+            <td class="date-col">{{ fund.date }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state" *ngIf="!loadingFunds && funds.length === 0">
+      <p>⚠️ Could not fetch live data. Check your internet connection and try refreshing.</p>
+    </div>
+  </div>
+
+  <!-- Market News -->
+  <div *ngIf="activeTab === 'news'">
+    <div class="news-grid">
+      <div class="news-card" *ngFor="let item of news" [ngClass]="getImpactClass(item.impact)">
+        <div class="news-icon">{{ item.icon }}</div>
+        <div class="news-body">
+          <div class="news-header">
+            <span class="news-title">{{ item.title }}</span>
+            <span class="impact-badge" [ngClass]="getImpactClass(item.impact)">
+              {{ item.impact === 'positive' ? '▲ Bullish' : item.impact === 'negative' ? '▼ Bearish' : '● Neutral' }}
+            </span>
+          </div>
+          <p class="news-desc">{{ item.description }}</p>
+          <div class="news-meta">
+            <span class="news-source">📌 {{ item.source }}</span>
+            <span class="news-time">🕐 {{ item.time }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investment Planner -->
+  <div *ngIf="activeTab === 'planner'">
+    <div class="planner-form">
+      <h3>🎯 Define Your Investment Goal</h3>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Goal Name</label>
+          <input type="text" [(ngModel)]="goal.goalName" placeholder="e.g., Retirement Fund" />
+        </div>
+        <div class="input-group">
+          <label>Target Amount (₹)</label>
+          <input type="number" [(ngModel)]="goal.targetAmount" placeholder="1000000" />
+        </div>
+        <div class="input-group">
+          <label>Current Savings (₹)</label>
+          <input type="number" [(ngModel)]="goal.currentAmount" placeholder="100000" />
+        </div>
+        <div class="input-group">
+          <label>Time Horizon (Months)</label>
+          <input type="number" [(ngModel)]="goal.timeHorizon" placeholder="60" />
+        </div>
+        <div class="input-group">
+          <label>Risk Tolerance</label>
+          <select [(ngModel)]="goal.riskTolerance">
+            <option value="low">🟢 Low — Conservative</option>
+            <option value="medium">🟡 Medium — Balanced</option>
+            <option value="high">🔴 High — Aggressive</option>
+          </select>
+        </div>
+        <div class="input-group btn-group">
+          <button class="btn-generate" (click)="generatePlan()" [disabled]="loadingPlan">
+            {{ loadingPlan ? '⏳ Generating...' : '🤖 Generate Plan' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="plan" class="plan-results">
+      <!-- Summary cards -->
+      <div class="summary-cards">
+        <div class="card purple">
+          <div class="card-icon">📅</div>
+          <div>
+            <div class="card-label">Monthly SIP Required</div>
+            <div class="card-value">₹{{ plan.monthlyInvestment | number:'1.0-0' }}</div>
+          </div>
+        </div>
+        <div class="card green">
+          <div class="card-icon">📈</div>
+          <div>
+            <div class="card-label">Projected Value</div>
+            <div class="card-value">₹{{ plan.projectedValue | number:'1.0-0' }}</div>
+          </div>
+        </div>
+        <div class="card blue">
+          <div class="card-icon">⏱️</div>
+          <div>
+            <div class="card-label">Time to Goal</div>
+            <div class="card-value">{{ plan.timeToGoal }} months</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-row">
+        <div class="chart-box">
+          <div class="chart-title">Portfolio Allocation</div>
+          <canvas id="allocationChart"></canvas>
+        </div>
+        <div class="chart-box">
+          <canvas id="projectionChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Fund breakdown -->
+      <div class="section-card">
+        <div class="section-title">📋 Recommended Fund Allocation</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Fund</th>
+              <th>Category</th>
+              <th>Allocation</th>
+              <th>Expected Return</th>
+              <th>Risk</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let fund of plan.allocations">
+              <td class="bold">{{ fund.fundName }}</td>
+              <td><span class="category-badge">{{ fund.category }}</span></td>
+              <td class="bold purple-text">{{ fund.allocation }}%</td>
+              <td class="positive">{{ fund.expectedReturn }}% p.a.</td>
+              <td><span class="risk-badge" [ngClass]="getRiskClass(fund.risk)">{{ fund.risk }}</span></td>
+              <td class="desc-col">{{ fund.description }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="section-card">
+        <div class="section-title">💡 AI Recommendations</div>
+        <div class="rec-list">
+          <div class="rec-item" *ngFor="let rec of plan.recommendations">
+            <span class="rec-icon">✓</span>
+            <p>{{ rec }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

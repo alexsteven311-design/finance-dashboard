@@ -1,0 +1,16 @@
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h2>🏛️ The Store House</h2>
+  </div>
+  <nav class="sidebar-nav">
+    <a *ngFor="let item of menuItems" 
+       [routerLink]="item.disabled ? null : item.path" 
+       routerLinkActive="active"
+       [class.disabled]="item.disabled"
+       class="nav-item">
+      <span class="nav-icon">{{ item.icon }}</span>
+      <span class="nav-label">{{ item.label }}</span>
+      <span *ngIf="item.disabled" class="coming-soon">Soon</span>
+    </a>
+  </nav>
+</div>

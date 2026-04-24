@@ -1,0 +1,106 @@
+<div class="spend-analyzer">
+  <div class="header">
+    <h1>Spend Analyzer Dashboard</h1>
+    <p>Upload your bank statement or Excel file to analyze spending patterns</p>
+  </div>
+
+  <div class="upload-section">
+    <label for="fileInput" class="upload-btn">
+      <span>📁 Upload Excel/CSV File</span>
+      <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" (change)="onFileSelected($event)" hidden>
+    </label>
+    <span class="file-name" *ngIf="fileName">{{ fileName }}</span>
+  </div>
+
+  <div *ngIf="transactions.length > 0" class="dashboard-content">
+    <div class="ai-insights" *ngIf="aiInsights.length > 0 || loadingInsights">
+      <h2>🤖 AI-Powered Insights</h2>
+      <div class="insights-grid">
+        <div *ngIf="loadingInsights" class="insight-card loading">
+          <p>Analyzing your spending patterns...</p>
+        </div>
+        <div *ngFor="let insight of aiInsights" class="insight-card" [ngClass]="insight.type">
+          <div class="insight-icon">
+            <span *ngIf="insight.type === 'warning'">⚠️</span>
+            <span *ngIf="insight.type === 'info'">💡</span>
+            <span *ngIf="insight.type === 'success'">✅</span>
+          </div>
+          <div class="insight-content">
+            <h4>{{ insight.title }}</h4>
+            <p>{{ insight.message }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-cards">
+      <div class="card income">
+        <h3>Total Income</h3>
+        <p class="amount">₹{{ totalIncome.toFixed(2) }}</p>
+      </div>
+      <div class="card spending">
+        <h3>Total Spending</h3>
+        <p class="amount">₹{{ totalSpending.toFixed(2) }}</p>
+      </div>
+      <div class="card balance">
+        <h3>Net Balance</h3>
+        <p class="amount">₹{{ (totalIncome - totalSpending).toFixed(2) }}</p>
+      </div>
+    </div>
+
+    <div class="charts-section">
+      <div class="chart-container">
+        <canvas id="pieChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+
+    <div class="category-table">
+      <h2>Category Breakdown</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Percentage</th>
+            <th>Transactions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cat of categorySummary">
+            <td>{{ cat.category }}</td>
+            <td>₹{{ cat.total.toFixed(2) }}</td>
+            <td>{{ cat.percentage.toFixed(1) }}%</td>
+            <td>{{ cat.count }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="transactions-table">
+      <h2>Recent Transactions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let txn of transactions.slice(0, 20)">
+            <td>{{ txn.date | date:'short' }}</td>
+            <td>{{ txn.description }}</td>
+            <td>{{ txn.category }}</td>
+            <td [class.debit]="txn.type === 'debit'" [class.credit]="txn.type === 'credit'">
+              {{ txn.type === 'debit' ? '-' : '+' }}₹{{ txn.amount.toFixed(2) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,249 @@
+<div class="investment-tracker">
+  <div class="header">
+    <div>
+      <h1>📈 Investment Tracker</h1>
+      <p>Track your portfolio with smart Buy / Hold / Sell decision signals</p>
+    </div>
+    <button class="add-btn" (click)="showAddForm = !showAddForm">
+      {{ showAddForm ? '✕ Cancel' : '+ Add Investment' }}
+    </button>
+  </div>
+
+  <!-- Add Form -->
+  <div *ngIf="showAddForm" class="add-form">
+    <h3>Add New Investment</h3>
+    <div class="form-grid">
+      <div class="input-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="newInvestment.name" placeholder="e.g., HDFC Equity Fund" />
+      </div>
+      <div class="input-group">
+        <label>Type</label>
+        <select [(ngModel)]="newInvestment.type">
+          <option value="Equity">Equity</option>
+          <option value="Debt">Debt</option>
+          <option value="Gold">Gold</option>
+          <option value="Real Estate">Real Estate</option>
+          <option value="Crypto">Crypto</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Invested Amount (₹)</label>
+        <input type="number" [(ngModel)]="newInvestment.investedAmount" placeholder="50000" />
+      </div>
+      <div class="input-group">
+        <label>Current Value (₹)</label>
+        <input type="number" [(ngModel)]="newInvestment.currentValue" placeholder="62000" />
+      </div>
+      <div class="input-group">
+        <label>Purchase Date</label>
+        <input type="date" [(ngModel)]="newInvestment.purchaseDate" />
+      </div>
+      <div class="input-group btn-col">
+        <button class="save-btn" (click)="addInvestment()">✓ Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards">
+    <div class="card purple">
+      <div class="card-icon">💼</div>
+      <div>
+        <div class="card-label">Total Invested</div>
+        <div class="card-value">₹{{ totalInvested | number:'1.0-0' }}</div>
+      </div>
+    </div>
+    <div class="card blue">
+      <div class="card-icon">📊</div>
+      <div>
+        <div class="card-label">Current Value</div>
+        <div class="card-value">₹{{ totalCurrent | number:'1.0-0' }}</div>
+      </div>
+    </div>
+    <div class="card" [class.green]="totalReturns >= 0" [class.red]="totalReturns < 0">
+      <div class="card-icon">💹</div>
+      <div>
+        <div class="card-label">Total Returns</div>
+        <div class="card-value">₹{{ totalReturns | number:'1.0-0' }}
+          <span class="returns-pct">({{ totalReturnsPercent >= 0 ? '+' : '' }}{{ totalReturnsPercent | number:'1.1-1' }}%)</span>
+        </div>
+      </div>
+    </div>
+    <div class="card health-card" [ngClass]="healthClass">
+      <div class="card-icon">🏥</div>
+      <div>
+        <div class="card-label">Portfolio Health</div>
+        <div class="card-value">{{ healthScore }}/100
+          <span class="health-label">{{ healthLabel }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button [class.active]="activeTab === 'portfolio'" (click)="activeTab = 'portfolio'; createCharts()">📋 Portfolio</button>
+    <button [class.active]="activeTab === 'decisions'" (click)="activeTab = 'decisions'">🎯 Decision Signals</button>
+    <button [class.active]="activeTab === 'analysis'" (click)="activeTab = 'analysis'">🔍 Risk Analysis</button>
+  </div>
+
+  <!-- Portfolio Tab -->
+  <div *ngIf="activeTab === 'portfolio'">
+    <div class="charts-row">
+      <div class="chart-box"><canvas id="allocationChart"></canvas></div>
+      <div class="chart-box"><canvas id="performanceChart"></canvas></div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">Your Investments</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Invested</th>
+            <th>Current Value</th>
+            <th>Returns</th>
+            <th>Returns %</th>
+            <th>Purchase Date</th>
+            <th>Signal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let inv of investments">
+            <td class="bold">{{ inv.name }}</td>
+            <td><span class="type-badge" [ngClass]="inv.type.toLowerCase().replace(' ', '-')">{{ inv.type }}</span></td>
+            <td>₹{{ inv.investedAmount | number:'1.0-0' }}</td>
+            <td class="bold">₹{{ inv.currentValue | number:'1.0-0' }}</td>
+            <td [class.positive]="inv.returns >= 0" [class.negative]="inv.returns < 0">
+              {{ inv.returns >= 0 ? '+' : '' }}₹{{ inv.returns | number:'1.0-0' }}
+            </td>
+            <td [class.positive]="inv.returnsPercent >= 0" [class.negative]="inv.returnsPercent < 0">
+              {{ inv.returnsPercent >= 0 ? '+' : '' }}{{ inv.returnsPercent | number:'1.1-1' }}%
+            </td>
+            <td class="date-col">{{ inv.purchaseDate | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <span class="signal-badge" [ngClass]="getSignalClass(getDecision(inv).signal)">
+                {{ getDecision(inv).signal }}
+              </span>
+            </td>
+            <td>
+              <button class="delete-btn" (click)="deleteInvestment(inv.id)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Decision Signals Tab -->
+  <div *ngIf="activeTab === 'decisions'">
+    <div class="decisions-info">
+      💡 Signals are generated based on returns %, holding period, asset type, and portfolio concentration.
+    </div>
+    <div class="decision-cards">
+      <div class="decision-card" *ngFor="let inv of investments" [ngClass]="getSignalClass(getDecision(inv).signal)">
+        <div class="decision-top">
+          <div class="decision-name">{{ inv.name }}</div>
+          <div class="decision-badges">
+            <span class="type-badge" [ngClass]="inv.type.toLowerCase().replace(' ', '-')">{{ inv.type }}</span>
+            <span class="signal-badge large" [ngClass]="getSignalClass(getDecision(inv).signal)">
+              {{ getDecision(inv).signal === 'BUY' ? '▲ BUY' : getDecision(inv).signal === 'SELL' ? '▼ SELL' : '● HOLD' }}
+            </span>
+          </div>
+        </div>
+        <div class="decision-stats">
+          <div class="stat">
+            <span class="stat-label">Invested</span>
+            <span class="stat-val">₹{{ inv.investedAmount | number:'1.0-0' }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Current</span>
+            <span class="stat-val">₹{{ inv.currentValue | number:'1.0-0' }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Returns</span>
+            <span class="stat-val" [class.positive]="inv.returnsPercent >= 0" [class.negative]="inv.returnsPercent < 0">
+              {{ inv.returnsPercent >= 0 ? '+' : '' }}{{ inv.returnsPercent | number:'1.1-1' }}%
+            </span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Confidence</span>
+            <span class="conf-badge" [ngClass]="getConfidenceClass(getDecision(inv).confidence)">
+              {{ getDecision(inv).confidence }}
+            </span>
+          </div>
+        </div>
+        <div class="decision-reason">
+          <span class="reason-label">📌 Reason:</span> {{ getDecision(inv).reason }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk Analysis Tab -->
+  <div *ngIf="activeTab === 'analysis'">
+
+    <!-- Health Score Bar -->
+    <div class="section-card">
+      <div class="section-title">🏥 Portfolio Health Score</div>
+      <div class="health-section">
+        <div class="health-score-display">
+          <div class="score-circle" [ngClass]="healthClass">{{ healthScore }}</div>
+          <div class="score-info">
+            <div class="score-label" [ngClass]="healthClass">{{ healthLabel }}</div>
+            <div class="score-bar">
+              <div class="score-fill" [ngClass]="healthClass" [style.width.%]="healthScore"></div>
+            </div>
+            <div class="score-desc">Based on returns, diversification, and concentration risk</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diversification Table -->
+    <div class="section-card">
+      <div class="section-title">📊 Diversification Analysis</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Asset Type</th>
+            <th>Current Value</th>
+            <th>Your Allocation</th>
+            <th>Recommended</th>
+            <th>Difference</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of allocationByType">
+            <td class="bold">{{ a.type }}</td>
+            <td>₹{{ a.value | number:'1.0-0' }}</td>
+            <td class="bold">{{ a.percent | number:'1.1-1' }}%</td>
+            <td class="muted">{{ a.recommended }}%</td>
+            <td [class.positive]="a.percent <= a.recommended" [class.negative]="a.percent > a.recommended">
+              {{ a.percent > a.recommended ? '+' : '' }}{{ (a.percent - a.recommended) | number:'1.1-1' }}%
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(a.status)">{{ a.status }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Risk Alerts -->
+    <div class="section-card">
+      <div class="section-title">⚠️ Risk Alerts & Recommendations</div>
+      <div class="alerts-list">
+        <div class="alert-item" *ngFor="let alert of riskAlerts" [ngClass]="getAlertClass(alert.level)">
+          <span class="alert-icon">{{ alert.icon }}</span>
+          <p>{{ alert.message }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

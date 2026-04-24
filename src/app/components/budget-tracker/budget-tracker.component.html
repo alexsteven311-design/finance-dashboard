@@ -1,0 +1,108 @@
+<div class="budget-tracker">
+  <div class="header">
+    <h1>💳 Budget Tracker</h1>
+    <p>Track your spending against budget limits</p>
+  </div>
+
+  <div class="summary-cards">
+    <div class="card">
+      <div class="card-icon">💰</div>
+      <div class="card-content">
+        <div class="card-label">Total Budget</div>
+        <div class="card-value">₹{{ totalBudget | number:'1.0-0' }}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">💸</div>
+      <div class="card-content">
+        <div class="card-label">Total Spent</div>
+        <div class="card-value">₹{{ totalSpent | number:'1.0-0' }}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <div class="card-content">
+        <div class="card-label">Remaining</div>
+        <div class="card-value" [class.negative]="totalSpent > totalBudget">
+          ₹{{ (totalBudget - totalSpent) | number:'1.0-0' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="budget-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Spending</th>
+          <th>Budget</th>
+          <th>Spent %</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let budget of budgets">
+          <td class="category">{{ budget.category }}</td>
+          <td class="spending">₹{{ budget.spent | number:'1.0-0' }}</td>
+          <td class="budget-limit">
+            <span *ngIf="editingCategory !== budget.category">₹{{ budget.limit | number:'1.0-0' }}</span>
+            <input 
+              *ngIf="editingCategory === budget.category"
+              type="number" 
+              [(ngModel)]="tempLimit"
+              class="limit-input"
+              (keyup.enter)="saveBudget(budget.category)"
+              (keyup.escape)="cancelEdit()"
+            />
+          </td>
+          <td class="percentage">
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div 
+                  class="progress-fill" 
+                  [style.width.%]="budget.percentage > 100 ? 100 : budget.percentage"
+                  [ngClass]="getStatusClass(budget.percentage)"
+                ></div>
+              </div>
+              <span class="percentage-text">{{ budget.percentage | number:'1.0-0' }}%</span>
+            </div>
+          </td>
+          <td class="status">
+            <span class="status-badge" [ngClass]="getStatusClass(budget.percentage)">
+              {{ getStatusText(budget.percentage) }}
+            </span>
+          </td>
+          <td class="actions">
+            <button 
+              *ngIf="editingCategory !== budget.category"
+              (click)="editBudget(budget.category, budget.limit)"
+              class="btn-edit"
+            >
+              ✏️
+            </button>
+            <button 
+              *ngIf="editingCategory === budget.category"
+              (click)="saveBudget(budget.category)"
+              class="btn-save"
+            >
+              ✓
+            </button>
+            <button 
+              *ngIf="editingCategory === budget.category"
+              (click)="cancelEdit()"
+              class="btn-cancel"
+            >
+              ✕
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-message" *ngIf="budgets.length === 0">
+    <p>📊 Upload transactions in Spend Analyzer to see budget tracking</p>
+  </div>
+</div>
