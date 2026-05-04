@@ -151,7 +151,8 @@ Top Performers:
 - Bitcoin: +23.3%
 
  ## 🤖 3. AI Decision Signals
- ![image alt](
+ ![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/11c9240d7648ef8ab00ae11f2282505d04b11459/Screenshot_28-4-2026_162849_localhost.jpeg)
+## How it works :
 - Intelligent recommendations for each investment
 - Signals based on:
 - Returns %
