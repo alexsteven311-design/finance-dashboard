@@ -105,3 +105,4 @@ See `SAMPLE_DATA.md` for example format.
 - Monthly/Yearly comparisons
 - Budget goals and alerts
 - Connect to bank APIs
+![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/7823c36a85d0e1754410a3c25af9b8bf3d033ea3/Screenshot%202026-03-10%20114933.png)
