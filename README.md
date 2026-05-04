@@ -108,6 +108,7 @@ See `SAMPLE_DATA.md` for example format.
 
 ## 1.🏠Dashboard Overview
 ![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/7823c36a85d0e1754410a3c25af9b8bf3d033ea3/Screenshot%202026-03-10%20114933.png)
+## How it works :
 - Monthly income & expense summary
 - Net savings tracking
 - Financial health score
@@ -131,4 +132,46 @@ See `SAMPLE_DATA.md` for example format.
 - Major expense: Housing & Loans (42.9%)
 
 ## 3.📈Investment Tracker
+![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/37cd6883529aefddaffed9820743ed5f8932acf1/Screenshot_28-4-2026_161843_localhost.jpeg)
+## How it works :
+- rack all investments in one place
+Monitor:
+- Total Invested: ₹155,000
+- Current Value: ₹184,100
+- Returns: ₹29,100 (+18.8%)
+- Portfolio allocation across:
+- Equity, Debt, Gold, Crypto
+- Performance comparison across assets
+- Smart Buy / Hold signals based on returns & trends
+
+Top Performers:
+
+- HDFC Equity Fund: +24%
+- Infosys Stock: +20%
+- Bitcoin: +23.3%
+
+ ## 🤖 3. AI Decision Signals
+- Intelligent recommendations for each investment
+- Signals based on:
+- Returns %
+- Market trends
+- Portfolio diversification
+
+Examples:
+
+✅ BUY: Strong momentum (Equity funds, Stocks)
+⚖️ HOLD: Uncertain or volatile assets (Crypto)
+📊 Suggests SIP or allocation changes
+
+## 🎯4.Investment Planning
 ![image alt](
+## How it works :
+- Set financial goals (e.g., Retirement Fund)
+- Input:
+  - Target amount
+  - Current savings
+  - Time horizon
+  - Risk tolerance
+  - Generates a personalized plan
+ 
+  
