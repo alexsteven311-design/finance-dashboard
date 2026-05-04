@@ -106,11 +106,29 @@ See `SAMPLE_DATA.md` for example format.
 - Budget goals and alerts
 - Connect to bank APIs
 
-## 🏠Dashboard Overview
+## 1.🏠Dashboard Overview
 ![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/7823c36a85d0e1754410a3c25af9b8bf3d033ea3/Screenshot%202026-03-10%20114933.png)
 - Monthly income & expense summary
 - Net savings tracking
 - Financial health score
 - Market insights (RBI trends, sector updates, etc.)
 
-## 📊Spend Analyzer
+## 2.📊Spend Analyzer
+![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/04e97d22f0837fda9e0bc75836baadc6c57244d5/Screenshot_28-4-2026_161513_localhost.jpeg)
+## How it works :
+- Upload bank statements (CSV/Excel) to automatically analyze expenses
+- AI-powered insights highlight unusual spending patterns
+- Category-wise breakdown (Housing, Groceries, Food, etc.)
+- Visual analytics with pie charts & bar graphs
+- Real-time alerts like:
+- ⚠️ High spending categories (e.g., Housing = 42.9%)
+
+ ## Insights from your dashboard:
+
+- Total Income: ₹40,000
+- Total Spending: ₹23,327
+- Net Balance: ₹16,673
+- Major expense: Housing & Loans (42.9%)
+
+## 3.📈Investment Tracker
+![image alt](
