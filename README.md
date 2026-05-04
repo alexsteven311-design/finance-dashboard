@@ -1,4 +1,4 @@
-# Finance Dashboard - Spend Analyzer
+# Finance Dashboard (AI-Powered Personal Finance Manager)
 
 A financial dashboard application built with Angular that analyzes spending patterns from bank statements and Excel files.
 
