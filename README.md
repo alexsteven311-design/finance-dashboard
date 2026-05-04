@@ -182,4 +182,10 @@ Examples:
 - Displays total budget, total spent, and remaining balance
 - Highlights categories that are Over Budget, Near Limit, or On Track
 - Visual progress bars for quick understanding
-## 6.Notifications and Alerts
+## 🔔6.Notifications and Alerts
+![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/e95f2b9d13dc0d26738eee2576c9ea6eed6b8f6f/Screenshot_28-4-2026_163918_localhost.jpeg)
+## How it works :
+- Real-time alerts for overspending, near-limit budgets, and healthy savings milestones
+- Investment performance updates (e.g., “HDFC Equity Fund +24% returns”)
+- Diversification tips for balanced portfolios
+## 7.Reports
