@@ -151,6 +151,7 @@ Top Performers:
 - Bitcoin: +23.3%
 
  ## 🤖 3. AI Decision Signals
+ ![image alt](
 - Intelligent recommendations for each investment
 - Signals based on:
 - Returns %
@@ -164,7 +165,7 @@ Examples:
 📊 Suggests SIP or allocation changes
 
 ## 🎯4.Investment Planning
-![image alt](
+![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/cb5278b9dedbb626bc365e7c7fe8960cf991d5a5/Screenshot_28-4-2026_163440_localhost.jpeg)
 ## How it works :
 - Set financial goals (e.g., Retirement Fund)
 - Input:
