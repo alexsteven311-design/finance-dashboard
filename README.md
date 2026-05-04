@@ -189,3 +189,17 @@ Examples:
 - Investment performance updates (e.g., “HDFC Equity Fund +24% returns”)
 - Diversification tips for balanced portfolios
 ## 7.Reports
+![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/b5871acad62d400821ba7711b184ccfb0d807409/Screenshot_28-4-2026_16376_localhost.jpeg)
+## How it works :
+- Breaks down spending by category (Housing, Groceries, Food, Shopping, etc.)
+- Compares spending against recommended benchmarks
+- Provides personalized suggestions to improve savings rate
+
+Example: “Savings rate is 41.7% — healthy! Consider investing surplus in SIPs or index funds.”
+
+## 8.Smart Advisor
+![image alt](
+## How it works :
+- Identifies overspending categories and offers actionable tips
+- Suggests quick wins like meal prepping, bulk grocery shopping, or using cashback offers
+- Estimates potential monthly savings if advice is followed
