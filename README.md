@@ -112,3 +112,5 @@ See `SAMPLE_DATA.md` for example format.
 - Net savings tracking
 - Financial health score
 - Market insights (RBI trends, sector updates, etc.)
+
+## 📊Spend Analyzer
