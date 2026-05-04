@@ -177,3 +177,9 @@ Examples:
   - Generates a personalized plan
  
 ## 5.Budget Tracker
+![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/main/Screenshot_28-4-2026_163641_localhost.jpeg?raw=true)
+## How it works :
+- Displays total budget, total spent, and remaining balance
+- Highlights categories that are Over Budget, Near Limit, or On Track
+- Visual progress bars for quick understanding
+## 6.Notifications and Alerts
