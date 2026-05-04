@@ -198,7 +198,7 @@ Examples:
 Example: “Savings rate is 41.7% — healthy! Consider investing surplus in SIPs or index funds.”
 
 ## 8.Smart Advisor
-![image alt](
+![image alt](https://github.com/alexsteven311-design/finance-dashboard/blob/f6bae8215e056d06339d339f8b6b736df0e372c7/Screenshot_28-4-2026_163813_localhost.jpeg)
 ## How it works :
 - Identifies overspending categories and offers actionable tips
 - Suggests quick wins like meal prepping, bulk grocery shopping, or using cashback offers
